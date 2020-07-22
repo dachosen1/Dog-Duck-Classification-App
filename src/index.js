@@ -14,10 +14,13 @@ import * as serviceWorker from './serviceWorker';
 import ImageClassificationDemo from "./pages/ImageClassificationDemo";
 import ClassificationUploader from "./pages/ClassificationUploader";
 import AutoClassfication from "./pages/AutoClassfication";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
+import SimpleNav from "./component/SimpleNav";
 
 ReactDOM.render(
   <React.StrictMode>
+      <SimpleNav/>
       <Router>
           <Switch>
               <Route path= '/autoClassfication' component={AutoClassfication}/>
