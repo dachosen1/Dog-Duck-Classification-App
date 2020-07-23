@@ -25,11 +25,11 @@ class AutoClassfication  extends Component{
 
         while (true) {
             if (this.state.imagesThatNeedInference.length > 0) {
-                while (this.state.imagesThatNeedInference > 0) {
+                while (this.state.imagesThatNeedInference.length > 0) {
                     await this.getNextImage()
                 }
             } else {
-                console.log('no images sleeping for 3 seconds')
+                console.log('No images detected in queue .... sleeping for 3 seconds')
 
                 await sleep(3000)
             }
@@ -88,6 +88,7 @@ class AutoClassfication  extends Component{
     classifyImage = async() => {
         const model = await automl.loadImageClassification('./image_classification_model_v1/model.json')
         const img = document.getElementById('animal')
+
         const predictions = await model.classify(img)
 
         console.log('predictions', predictions)
@@ -118,7 +119,6 @@ class AutoClassfication  extends Component{
         return winningPrediction
 
     }
-
 
 
 
