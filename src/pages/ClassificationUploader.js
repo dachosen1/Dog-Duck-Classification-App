@@ -4,7 +4,7 @@ import FileUploader from 'react-firebase-file-uploader'
 
 class ClassificationUploader extends Component {
     state = {
-        imagestorageRef: 'userUploaded',
+        imagestorageRef: 'userUploaded/animals',
         imgSrc: 'n/a'
     }
 
@@ -35,7 +35,7 @@ class ClassificationUploader extends Component {
             <div>
                 this is a classification uploader
                 <br />
-                {this.state.imgSrc != 'n/a' && <img src={this.state.imgSrc}/>}
+                {this.state.imgSrc !== 'n/a' && <img src={this.state.imgSrc}/>}
                 <br/>
                 <FileUploader accept = 'image/'
                               storageRef = {firebase.storage().ref(this.state.imagestorageRef)}

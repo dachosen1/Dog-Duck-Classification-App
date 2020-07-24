@@ -64,6 +64,7 @@ class AutoClassfication  extends Component{
         this.setState({
             currentImageObj: nextImage
         })
+        console.log('fetching next image, :URL', nextImage.url)
 
         await fetch(nextImage.url)
             .then(async response => response.blob())

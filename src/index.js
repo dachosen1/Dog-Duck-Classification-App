@@ -17,16 +17,18 @@ import AutoClassfication from "./pages/AutoClassfication";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import SimpleNav from "./component/SimpleNav";
+import UserDemo from "./pages/UserDemo";
 
 ReactDOM.render(
   <React.StrictMode>
       <SimpleNav/>
       <Router>
           <Switch>
+              <Route path='/userClassficatoinDemo' component={UserDemo}/>
               <Route path= '/autoClassfication' component={AutoClassfication}/>
               <Route path = '/classficationUploader' component={ClassificationUploader} />
               <Route path = '/classificationDemo' component  ={ImageClassificationDemo}/>
-              <Route path = '/' component={App}/>
+              <Route path = '/' component={UserDemo}/>
           </Switch>
       </Router>
     <App />
