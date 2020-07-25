@@ -24,7 +24,7 @@ ReactDOM.render(
       <SimpleNav/>
       <Router>
           <Switch>
-              <Route path='/userClassficatoinDemo' component={UserDemo}/>
+              <Route path='/userClassficationDemo' component={UserDemo}/>
               <Route path= '/autoClassfication' component={AutoClassfication}/>
               <Route path = '/classficationUploader' component={ClassificationUploader} />
               <Route path = '/classificationDemo' component  ={ImageClassificationDemo}/>

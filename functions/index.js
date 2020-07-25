@@ -2,14 +2,14 @@
 //AutoML Info
 const project_name = 'image-283903'
 const project_region = 'us-central1'
-const dataset_id = 'ICN2658167216683352064'
+const dataset_id = 'ICN2577762130367348736'
 
 const bucket_prefix = 'animals'
 const labels = ['animals']
 
 const model_name = `${bucket_prefix}_${new Date().getTime()}`
 const num_labels = labels.length
-const img_threshold = 10;
+const img_threshold = 2;
 
 // Dependencies
 const fs = require('fs')
@@ -37,9 +37,9 @@ exports.uploadToVCMBucket = functions.storage.object().onFinalize(event => {
     const file = storage.bucket(event.bucket).file(event.name)
     const newLocation = `gs://${project_name}-vcm/${event.name}`
 
-    console.log('file', file)
+  //  console.log('file', file)
     return file.copy(newLocation).then((err, copiedFile, resp) =>{
-            return event.name.substring(0, event.name.lastIndexOf('/'))}).then((label) => {
+        return event.name.substring(0, event.name.lastIndexOf('/'))}).then((label) => {
             return writeToDB(label)
     });
 })
@@ -67,6 +67,7 @@ function createCSV(bucket) {
                     let label = strippedName.substring(0, strippedName.indexOf('/'))
                     let fileURL = `gs://${project_name}-vcm/${filename}`
                     csvString += `${fileURL}, ${label}\n`
+                    console.log('Create CSV is good ')
                 }
             }
             resolve (csvString)
@@ -75,24 +76,23 @@ function createCSV(bucket) {
 }
 
 function uploadtoAutoMl (csvpath) {
-    return new Promise(((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         const request = {
-            name: automlClient.datasetPath(project_name, project_region, project_region),
+            name: automlClient.datasetPath(project_name, project_region, dataset_id),
             inputConfig: {
                 'gcsSource':{'inputUris': [csvpath]}
             }
         }
-        automlClient.importData(request)
-            .then(response =>{
-                let op = response[0]
-                op.on('complete', (result, metadata, finalresp) => {
-                    resolve('dataset was uploaded successfully')
-                })
-                op.on('error', err =>{
-                  reject('error occured uploading dataset to automl')
-                })
+        automlClient.importData(request).then(responses =>{
+            let op = responses[0]
+            op.on('complete', (result, metadata, finalresp) => {
+                resolve('dataset was uploaded successfully')
             })
-    }))
+            op.on('error', err =>{
+                reject('error occured uploading dataset to automl')
+            })
+        })
+    })
 }
 
 function uploadToGcs(filepath){
@@ -101,8 +101,8 @@ function uploadToGcs(filepath){
             .bucket(`${project_name}-vcm`)
             .upload(filepath, {destination: `${bucket_prefix}.csv`})
             .then(() => {
-            resolve('upload was successful')
-        })
+                resolve('upload was successful')
+            })
             .catch(err => {
                 reject(err)
             })
@@ -110,7 +110,7 @@ function uploadToGcs(filepath){
     )
 }
 
-exports.checkNumberofImages = functions.database.ref(bucket_prefix).onWrite((snap, contex) => {
+exports.checkNumberofImages = functions.database.ref(bucket_prefix).onWrite((snap, context) => {
     const afterData = snap.after.val()
     let num_label_with_enough_photos = 0
 
@@ -119,16 +119,15 @@ exports.checkNumberofImages = functions.database.ref(bucket_prefix).onWrite((sna
             num_label_with_enough_photos += 1
         }
     }
+    console.log('Number of Labels:', num_labels, 'Labels With Enough Photos:', num_label_with_enough_photos)
 
     const automlBucketPath = storage.bucket(`${project_name}-vcm`)
-
-    if (num_label_with_enough_photos == num_labels){
-        return createCSV(automlBucketPath)
-            .then(csvData => {
+    if (num_label_with_enough_photos >= num_labels){
+        return createCSV(automlBucketPath).then(csvData => {
                 return fs.writeFile('/tmp/labels.csv', csvData, () => {})
             })
             .then(err => {
-                if (err) {console.log('errr', err)}
+                if (err) {console.log('errr ', err)}
                 console.log('csv was created')
                 return uploadToGcs('/tmp/labels.csv')
             })

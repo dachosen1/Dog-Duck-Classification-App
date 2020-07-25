@@ -46,6 +46,11 @@ const SimpleNav = (props) => {
                     <NavLink href="/autoClassfication/">Auto Classfication</NavLink>
                   </NavItem>
                 </DropdownItem>
+                <DropdownItem>
+                  <NavItem>
+                    <NavLink href="/userClassficationDemo/">User Classification Demo</NavLink>
+                  </NavItem>
+                </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
           </Nav>
